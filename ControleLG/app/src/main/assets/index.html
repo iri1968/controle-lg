@@ -5,104 +5,138 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Controle LG</title>
 <style>
-:root{--bg:#14161a;--panel:#1f2329;--key:#2b3038;--key2:#363c46;--txt:#eef1f5;--mut:#8b94a3;--acc:#7cc4ff;--red:#e5484d;--ok:#46c37b}
+:root{--bg:#14161a;--panel:#1f2329;--key:#2b3038;--key2:#363c46;--txt:#eef1f5;--mut:#8b94a3;--acc:#7cc4ff;--red:#ff4a4f;--ok:#46c37b}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-body{max-width:460px;margin:0 auto;padding:14px 14px 28px}
-button{font:inherit;color:var(--txt);background:var(--key);border:0;border-radius:14px;min-height:52px;font-size:18px;cursor:pointer;touch-action:manipulation}
-button:active{background:var(--key2);transform:scale(.97)}
+body{max-width:460px;margin:0 auto;padding:12px 14px 32px}
+button{font:inherit;color:var(--txt);background:var(--key);border:0;border-radius:14px;min-height:48px;font-size:17px;cursor:pointer;touch-action:manipulation;user-select:none}
+button:active{filter:brightness(1.5)}
 input{font:inherit;background:var(--panel);border:1px solid var(--key2);color:var(--txt);border-radius:10px;padding:12px;font-size:16px;min-width:0}
-#status{font-size:15px;color:var(--mut);margin:0 2px 12px;min-height:22px}
+#status{font-size:15px;color:var(--mut);margin:0 2px 10px;min-height:22px;text-align:center}
 #status.on{color:var(--ok)} #status.err{color:#ff8a8e}
 #tvs{display:grid;gap:8px;margin-bottom:10px}
-#tvs button{background:var(--panel);border:1px solid var(--acc);text-align:left;padding:0 16px;font-size:17px}
-.row{display:grid;gap:10px;margin-bottom:10px}
-.c3{grid-template-columns:repeat(3,1fr)} .c4{grid-template-columns:repeat(4,1fr)}
-.power{background:var(--red)} .on-btn{background:var(--ok);color:#06121c;font-weight:600}
-.dpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--panel);padding:12px;border-radius:26px;margin:14px 0}
-.dpad button{min-height:60px;background:var(--key2);font-size:20px}
-.dpad .ok{background:var(--acc);color:#06121c;font-weight:700;border-radius:50%}
-.vc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.pair{display:grid;grid-template-rows:repeat(3,1fr);background:var(--panel);border-radius:22px;padding:6px;gap:4px;text-align:center}
-.pair button{background:transparent;min-height:50px;font-size:24px}
-.pair span{align-self:center;color:var(--mut);font-size:13px}
-.apps button{font-size:15px;font-weight:600}
-.nl{background:#e50914}.yt{background:#c4302b}.pv{background:#00a8e1;color:#06121c}.hm{background:#6a3df0}
-details{margin-top:12px;background:var(--panel);border-radius:14px;padding:4px 12px}
-summary{padding:12px 0;cursor:pointer;color:var(--mut)}
+#tvs button{background:var(--panel);border:1px solid var(--acc);text-align:left;padding:0 16px}
 .line{display:flex;gap:8px;margin:6px 0 12px}
 .line input{flex:1}
 .line button{min-height:46px;padding:0 14px;font-size:15px}
-.line .go{background:var(--acc);color:#06121c;font-weight:600}
-small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
+.go{background:var(--acc);color:#06121c;font-weight:600}
 #pinbox{display:none}
+
+/* ===== controle em formato do controle físico ===== */
+.remote{width:min(100%,310px);margin:8px auto 0;padding:24px 18px 46px;
+  background:linear-gradient(165deg,#2c2f35 0%,#101114 40%,#1b1d21 100%);
+  border-radius:155px 155px 135px 135px / 130px 130px 160px 160px;
+  border:1px solid #30343b;
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.16),inset 0 -8px 16px rgba(0,0,0,.6),0 12px 30px rgba(0,0,0,.55);
+  display:flex;flex-direction:column;align-items:center;gap:16px}
+.rb{width:54px;height:54px;min-height:0;border-radius:50%;background:#17191d;border:1px solid #343840;font-size:22px;color:#d5dae2;padding:0}
+.rb.p{width:64px;height:64px;font-size:28px;color:var(--red);border:2px solid #4a2326;background:#141518}
+.rb.p.on{box-shadow:0 0 14px rgba(255,74,79,.5)}
+.top3{display:flex;justify-content:space-between;align-items:center;width:84%}
+.dot{width:10px;height:10px;border-radius:50%;background:#0a0a0c;border:1px solid #2b2e34}
+.ring{position:relative;width:min(232px,72vw);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,#08090b 52%,#1b1e22 54%,#2c3036 100%);border:2px solid #373b43;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.8)}
+.ring .a{position:absolute;width:48px;height:48px;min-height:0;padding:0;background:transparent;font-size:19px;color:#9ba4b3;border-radius:50%}
+.a.u{top:5px;left:calc(50% - 24px)} .a.d{bottom:5px;left:calc(50% - 24px)}
+.a.l{left:5px;top:calc(50% - 24px)} .a.r{right:5px;top:calc(50% - 24px)}
+.ring .ok{position:absolute;width:42%;height:42%;left:29%;top:29%;min-height:0;padding:0;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#555b65,#15171a 75%);border:2px solid #2c3036;font-size:17px;font-weight:700;color:#e8ecf2}
+.duo{display:flex;justify-content:space-between;width:92%;margin-top:-6px}
+.duo .rb{width:52px;height:46px;border-radius:14px;font-size:16px;font-weight:700;background:#15171a}
+.cores{display:flex;justify-content:space-between;width:92%}
+.cores button{width:54px;min-height:0;height:26px;border-radius:13px;border:0;padding:0}
+.rd{background:#c93a55}.gr{background:#2fa04d}.yl{background:#d9b230}.bl{background:#3a6ad6}
+.p3{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;width:100%;
+  background:#0b0c0f;border:1px solid #2b2f36;border-radius:70px 70px 60px 60px / 50px 50px 70px 70px;padding:18px 14px 24px}
+.col{display:grid;grid-template-rows:repeat(3,1fr);gap:8px;align-items:center;text-align:center}
+.col span{font-weight:700;font-size:15px;color:#e5e8ee;letter-spacing:.5px}
+.sq{background:#15171b;min-height:58px;border-radius:12px;font-size:22px;color:#aab2c0;padding:0}
+.sq.t{font-size:13px;font-weight:700;color:#e5e8ee;line-height:1.15}
+.sq.m{color:#e5e8ee}
+
+.apps{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+.apps button{font-size:15px;font-weight:600}
+.ft{background:#ff9900;color:#1a1000}.pc{background:#3a4a63;color:#eaf1ff}.apps.a3{grid-template-columns:repeat(3,1fr);margin-top:10px}.nl{background:#e50914}.yt{background:#c4302b}.pv{background:#00a8e1;color:#06121c}
+details{margin-top:12px;background:var(--panel);border-radius:14px;padding:4px 12px}
+summary{padding:12px 0;cursor:pointer;color:var(--mut)}
+small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
+
+#painel{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:flex-end;justify-content:center;z-index:10}
+#painel .sheet{width:100%;max-width:460px;background:var(--panel);border-radius:22px 22px 0 0;padding:16px 14px 24px;max-height:90vh;overflow:auto}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+#entradas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.tit{color:var(--mut);font-size:14px;margin:4px 0 8px}
 </style>
 </head>
 <body>
 
 <p id="status" role="status">Procurando a TV…</p>
 <div id="tvs"></div>
-
 <div class="line" id="pinbox">
   <input id="pin" inputmode="numeric" placeholder="Código que apareceu na TV" aria-label="Código da TV">
   <button class="go" id="pinOk">Enviar</button>
 </div>
 
-<div class="row c3">
-  <button class="on-btn" id="ligar">Ligar</button>
-  <button class="power" data-uri="system/turnOff">Desligar</button>
-  <button id="mute">Mudo</button>
-</div>
+<div class="remote">
+  <button class="rb p" id="pwr" aria-label="Ligar ou desligar">⏻</button>
 
-<div class="vc">
-  <div class="pair">
-    <button data-uri="audio/volumeUp" aria-label="Volume mais">+</button>
-    <span>Volume</span>
-    <button data-uri="audio/volumeDown" aria-label="Volume menos">−</button>
+  <div class="top3">
+    <button class="rb" data-btn="BACK" aria-label="Voltar">↩</button>
+    <span class="dot"></span>
+    <button class="rb" data-btn="HOME" aria-label="Início">⌂</button>
   </div>
-  <div class="pair">
-    <button data-uri="tv/channelUp" aria-label="Canal mais">+</button>
-    <span>Canal</span>
-    <button data-uri="tv/channelDown" aria-label="Canal menos">−</button>
+
+  <div class="ring">
+    <button class="a u" data-btn="UP" aria-label="Cima">▲</button>
+    <button class="a l" data-btn="LEFT" aria-label="Esquerda">◀</button>
+    <button class="a r" data-btn="RIGHT" aria-label="Direita">▶</button>
+    <button class="a d" data-btn="DOWN" aria-label="Baixo">▼</button>
+    <button class="ok" data-btn="ENTER">OK</button>
+  </div>
+
+  <div class="duo">
+    <button class="rb" data-app="com.webos.app.livetv" aria-label="TV ao vivo">TV</button>
+    <button class="rb" id="kbd" aria-label="Digitar texto">⌨</button>
+  </div>
+
+  <div class="cores">
+    <button class="rd" data-btn="RED" aria-label="Vermelho"></button>
+    <button class="gr" data-btn="GREEN" aria-label="Verde"></button>
+    <button class="yl" data-btn="YELLOW" aria-label="Amarelo"></button>
+    <button class="bl" data-btn="BLUE" aria-label="Azul"></button>
+  </div>
+
+  <div class="p3">
+    <div class="col">
+      <button class="sq" data-uri="audio/volumeUp" aria-label="Volume mais">+</button>
+      <span>VOL</span>
+      <button class="sq" data-uri="audio/volumeDown" aria-label="Volume menos">−</button>
+    </div>
+    <div class="col">
+      <button class="sq t" id="num">123<br>INPUT</button>
+      <button class="sq t" data-btn="3D">3D</button>
+      <button class="sq m" id="mute" aria-label="Mudo">🔇</button>
+    </div>
+    <div class="col">
+      <button class="sq" data-uri="tv/channelUp" aria-label="Canal mais">︿</button>
+      <span>CH</span>
+      <button class="sq" data-uri="tv/channelDown" aria-label="Canal menos">﹀</button>
+    </div>
   </div>
 </div>
 
-<div class="dpad">
-  <button data-btn="MENU">Menu</button>
-  <button data-btn="UP" aria-label="Cima">▲</button>
-  <button data-btn="HOME">Início</button>
-  <button data-btn="LEFT" aria-label="Esquerda">◀</button>
-  <button class="ok" data-btn="ENTER">OK</button>
-  <button data-btn="RIGHT" aria-label="Direita">▶</button>
-  <button data-btn="BACK">Voltar</button>
-  <button data-btn="DOWN" aria-label="Baixo">▼</button>
-  <button data-btn="EXIT">Sair</button>
+<div class="apps">
+  <button class="ft" id="fire">Fire TV</button>
+  <button class="pc" id="pc">PC</button>
 </div>
-
-<div class="row c4 apps">
+<div class="apps a3">
   <button class="nl" data-app="netflix">Netflix</button>
   <button class="yt" data-app="youtube.leanback.v4">YouTube</button>
   <button class="pv" data-app="amazon">Prime</button>
-  <button class="hm" data-app="com.webos.app.home">Início</button>
 </div>
 
-<details>
-  <summary>Números e cores</summary>
-  <div class="row c3">
-    <button data-btn="1">1</button><button data-btn="2">2</button><button data-btn="3">3</button>
-    <button data-btn="4">4</button><button data-btn="5">5</button><button data-btn="6">6</button>
-    <button data-btn="7">7</button><button data-btn="8">8</button><button data-btn="9">9</button>
-    <span></span><button data-btn="0">0</button><span></span>
-  </div>
-  <div class="row c4">
-    <button data-btn="RED" style="background:#c93a3a">&nbsp;</button>
-    <button data-btn="GREEN" style="background:#3a9a55">&nbsp;</button>
-    <button data-btn="YELLOW" style="background:#c9a93a">&nbsp;</button>
-    <button data-btn="BLUE" style="background:#3a6ac9">&nbsp;</button>
-  </div>
-</details>
-
-<details>
+<details id="dtxt">
   <summary>Digitar texto na TV</summary>
   <div class="line">
     <input id="txt" placeholder="Digite aqui" aria-label="Texto">
@@ -119,14 +153,32 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
     <input id="ip" inputmode="decimal" placeholder="192.168.0.7">
     <button class="go" id="conectarIp">Conectar</button>
   </div>
-  <small style="padding-bottom:4px">Endereço MAC da TV (para o botão Ligar):</small>
+  <small style="padding-bottom:4px">Endereço MAC da TV (para ligar):</small>
   <div class="line">
     <input id="mac" placeholder="C8:02:10:3B:00:E8">
     <button id="salvarMac">Salvar</button>
   </div>
-  <small>O botão Ligar só funciona se a TV aceitar ser ligada pelo Wi-Fi. Procure "Ligar pelo Wi-Fi" ou "Wake on LAN" nas configurações da TV (Geral).</small>
+  <small>Com a TV desligada, o botão ⏻ liga pelo Wi-Fi, se a TV aceitar. Procure "Ligar pelo Wi-Fi" ou "Wake on LAN" nas configurações da TV (Geral).</small>
+  <small style="padding-bottom:4px">Padrão: Fire TV na entrada 3 (HDMI 3) e PC na entrada 1 (HDMI 1). Mude aqui se precisar.</small>
+  <button id="trocarFire" style="width:100%;margin-bottom:10px">Escolher a entrada do Fire TV</button>
+  <button id="trocarPc" style="width:100%;margin-bottom:10px">Escolher a entrada do PC</button>
   <button id="procurar" style="width:100%;margin-bottom:12px">Procurar TV de novo</button>
 </details>
+
+<div id="painel">
+  <div class="sheet">
+    <p class="tit">Números</p>
+    <div class="g3">
+      <button data-btn="1">1</button><button data-btn="2">2</button><button data-btn="3">3</button>
+      <button data-btn="4">4</button><button data-btn="5">5</button><button data-btn="6">6</button>
+      <button data-btn="7">7</button><button data-btn="8">8</button><button data-btn="9">9</button>
+      <span></span><button data-btn="0">0</button><span></span>
+    </div>
+    <p class="tit" id="titEnt">Entradas da TV (HDMI, etc.)</p>
+    <div id="entradas"></div>
+    <button id="fechar" style="width:100%">Fechar</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -144,6 +196,7 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
   };
   const nativo = (typeof Android !== "undefined") ? Android : null;
   function say(t, cls){ st.textContent = t; st.className = cls || ""; }
+  function luz(on){ $("#pwr").classList.toggle("on", !!on); }
 
   $("#ip").value = store.get("lg_ip") || "";
   $("#mac").value = store.get("lg_mac") || DEFAULT_MAC;
@@ -159,7 +212,7 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
   }
 
   function tentar(tentaSeguro){
-    seguro = tentaSeguro; abriu = false; conectado = false;
+    seguro = tentaSeguro; abriu = false; conectado = false; luz(false);
     say("Conectando a " + ip + " (porta " + (seguro ? "3001" : "3000") + ")…");
     nativo.connect(ip, seguro);
     clearTimeout(tAbrir);
@@ -168,9 +221,9 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
 
   function falhou(){
     clearTimeout(tAbrir);
-    if(seguro){ nativo.closeWs(); tentar(false); return; }
     nativo.closeWs();
-    say("Não consegui falar com a TV. Veja se ela está ligada e no mesmo Wi-Fi.", "err");
+    if(seguro){ tentar(false); return; }
+    say("Não consegui falar com a TV. Ela está ligada e no mesmo Wi-Fi? Toque em ⏻ para ligar.", "err");
   }
 
   function enviarRegistro(){
@@ -204,6 +257,27 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
     }
   }
 
+  /* ---------- painel 123 / INPUT ---------- */
+  function abrirPainel(escolher){ /* escolher: false, "lg_fire" ou "lg_pc" */
+    if(!conectado){ say("Conecte à TV primeiro", "err"); return; }
+    $("#painel").style.display = "flex";
+    $("#titEnt").textContent = escolher === "lg_pc" ? "Toque na entrada onde o PC está ligado" : escolher ? "Toque na entrada onde o Fire TV está ligado" : "Entradas da TV (HDMI, etc.)";
+    const box = $("#entradas"); box.innerHTML = "";
+    req("tv/getExternalInputList", {}, p => {
+      ((p && p.devices) || []).forEach(d => {
+        const b = document.createElement("button");
+        b.textContent = d.label || d.id;
+        b.onclick = () => {
+          if(escolher){ store.set(escolher, d.id); say((escolher === "lg_pc" ? "PC" : "Fire TV") + " salvo em " + (d.label || d.id), "on"); }
+          req("tv/switchInput", {inputId:d.id});
+          fecharPainel();
+        };
+        box.appendChild(b);
+      });
+    });
+  }
+  function fecharPainel(){ $("#painel").style.display = "none"; }
+
   /* ---------- eventos vindos do app ---------- */
   window.nativeEvent = function(tipo, dado){
     if(tipo === "open"){
@@ -218,7 +292,7 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
         $("#pin").focus();
       } else if(m.type === "registered"){
         clearTimeout(tResp);
-        conectado = true;
+        conectado = true; luz(true);
         $("#pinbox").style.display = "none";
         if(m.payload && m.payload["client-key"]) store.set("lg_key_" + ip, m.payload["client-key"]);
         say("Conectado à TV (" + ip + ")", "on");
@@ -230,9 +304,7 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
       }
     } else if(tipo === "close"){
       if(!abriu){ falhou(); }
-      else { conectado = false; say("Conexão encerrada. Toque na TV para conectar de novo.", "err"); }
-    } else if(tipo === "ptrclose"){
-      /* o ponteiro é reaberto quando necessário */
+      else { conectado = false; luz(false); say("Conexão encerrada. Toque em ⏻ ou escolha a TV para conectar.", "err"); }
     } else if(tipo === "found"){
       achadas++;
       const b = document.createElement("button");
@@ -241,9 +313,14 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
       $("#tvs").appendChild(b);
       if(!conectado && achadas === 1 && !store.get("lg_ip")) conectar(dado);
     } else if(tipo === "discoverEnd"){
-      if(achadas === 0 && !conectado && !ip) say("Nenhuma TV encontrada. Abra Configurações abaixo e digite o IP.", "err");
+      if(achadas === 0 && !conectado && !ip) say("Nenhuma TV encontrada. Abra Configurações e digite o IP.", "err");
     } else if(tipo === "wol"){
-      say(dado === "ok" ? "Sinal enviado. A TV pode levar uns segundos para ligar." : "Endereço MAC inválido. Confira em Configurações.", dado === "ok" ? "on" : "err");
+      if(dado === "ok"){
+        say("Sinal enviado. Aguarde a TV ligar…", "on");
+        if(ip){ setTimeout(() => { if(!conectado) conectar(ip); }, 12000); }
+      } else {
+        say("Endereço MAC inválido. Confira em Configurações.", "err");
+      }
     }
   };
 
@@ -254,28 +331,38 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
     nativo.discover();
   }
 
+  function energia(){
+    if(conectado){ req("system/turnOff"); luz(false); return; }
+    const mac = $("#mac").value.trim();
+    store.set("lg_mac", mac);
+    say("Enviando sinal para ligar a TV…");
+    nativo.wol(mac, ip || $("#ip").value.trim());
+  }
+
   /* ---------- botões ---------- */
   document.addEventListener("click", e => {
     const b = e.target.closest("button");
     if(!b || !nativo) return;
-    if(b.dataset.uri){ req(b.dataset.uri); }
+    if(b.id === "pwr"){ energia(); }
     else if(b.id === "mute"){ mudo = !mudo; req("audio/setMute", {mute:mudo}); }
+    else if(b.id === "num"){ abrirPainel(false); }
+    else if(b.id === "fire"){ req("tv/switchInput", {inputId: store.get("lg_fire") || "HDMI_3"}); }
+    else if(b.id === "pc"){ req("tv/switchInput", {inputId: store.get("lg_pc") || "HDMI_1"}); }
+    else if(b.id === "trocarFire"){ abrirPainel("lg_fire"); }
+    else if(b.id === "trocarPc"){ abrirPainel("lg_pc"); }
+    else if(b.id === "kbd"){ const d = $("#dtxt"); d.open = true; d.scrollIntoView({behavior:"smooth"}); $("#txt").focus(); }
+    else if(b.dataset.uri){ req(b.dataset.uri); }
     else if(b.dataset.btn){ botao(b.dataset.btn); }
     else if(b.dataset.app){ req("system.launcher/launch", {id:b.dataset.app}); }
   });
 
+  $("#fechar").onclick = fecharPainel;
   $("#pinOk").onclick = () => {
     const pin = $("#pin").value.trim();
     if(pin) nativo.send(JSON.stringify({type:"request", id:"pin_0", uri:"ssap://pairing/setPin", payload:{pin}}));
   };
   $("#conectarIp").onclick = () => conectar($("#ip").value);
   $("#procurar").onclick = procurar;
-  $("#ligar").onclick = () => {
-    const mac = $("#mac").value.trim();
-    store.set("lg_mac", mac);
-    say("Enviando sinal para ligar a TV…");
-    nativo.wol(mac, ip || $("#ip").value.trim());
-  };
   $("#salvarMac").onclick = () => { store.set("lg_mac", $("#mac").value.trim()); say("MAC salvo", "on"); };
   $("#enviarTxt").onclick = () => { const t = $("#txt").value; if(t) req("com.webos.service.ime/insertText", {text:t, replace:0}); };
   $("#enviarMsg").onclick = () => { const t = $("#txt").value; if(t) req("system.notifications/createToast", {message:t}); };
@@ -289,6 +376,4 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
     procurar();
   }
 })();
-</script>
-</body>
-</html>
+</script></body></html>
