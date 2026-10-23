@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle LG</title>
+<style>
+:root{--bg:#14161a;--panel:#1f2329;--key:#2b3038;--key2:#363c46;--txt:#eef1f5;--mut:#8b94a3;--acc:#7cc4ff;--red:#e5484d;--ok:#46c37b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{max-width:460px;margin:0 auto;padding:14px 14px 28px}
+button{font:inherit;color:var(--txt);background:var(--key);border:0;border-radius:14px;min-height:52px;font-size:18px;cursor:pointer;touch-action:manipulation}
+button:active{background:var(--key2);transform:scale(.97)}
+input{font:inherit;background:var(--panel);border:1px solid var(--key2);color:var(--txt);border-radius:10px;padding:12px;font-size:16px;min-width:0}
+#status{font-size:15px;color:var(--mut);margin:0 2px 12px;min-height:22px}
+#status.on{color:var(--ok)} #status.err{color:#ff8a8e}
+#tvs{display:grid;gap:8px;margin-bottom:10px}
+#tvs button{background:var(--panel);border:1px solid var(--acc);text-align:left;padding:0 16px;font-size:17px}
+.row{display:grid;gap:10px;margin-bottom:10px}
+.c3{grid-template-columns:repeat(3,1fr)} .c4{grid-template-columns:repeat(4,1fr)}
+.power{background:var(--red)} .on-btn{background:var(--ok);color:#06121c;font-weight:600}
+.dpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:var(--panel);padding:12px;border-radius:26px;margin:14px 0}
+.dpad button{min-height:60px;background:var(--key2);font-size:20px}
+.dpad .ok{background:var(--acc);color:#06121c;font-weight:700;border-radius:50%}
+.vc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.pair{display:grid;grid-template-rows:repeat(3,1fr);background:var(--panel);border-radius:22px;padding:6px;gap:4px;text-align:center}
+.pair button{background:transparent;min-height:50px;font-size:24px}
+.pair span{align-self:center;color:var(--mut);font-size:13px}
+.apps button{font-size:15px;font-weight:600}
+.nl{background:#e50914}.yt{background:#c4302b}.pv{background:#00a8e1;color:#06121c}.hm{background:#6a3df0}
+details{margin-top:12px;background:var(--panel);border-radius:14px;padding:4px 12px}
+summary{padding:12px 0;cursor:pointer;color:var(--mut)}
+.line{display:flex;gap:8px;margin:6px 0 12px}
+.line input{flex:1}
+.line button{min-height:46px;padding:0 14px;font-size:15px}
+.line .go{background:var(--acc);color:#06121c;font-weight:600}
+small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
+#pinbox{display:none}
+</style>
+</head>
+<body>
+
+<p id="status" role="status">Procurando a TV…</p>
+<div id="tvs"></div>
+
+<div class="line" id="pinbox">
+  <input id="pin" inputmode="numeric" placeholder="Código que apareceu na TV" aria-label="Código da TV">
+  <button class="go" id="pinOk">Enviar</button>
+</div>
+
+<div class="row c3">
+  <button class="on-btn" id="ligar">Ligar</button>
+  <button class="power" data-uri="system/turnOff">Desligar</button>
+  <button id="mute">Mudo</button>
+</div>
+
+<div class="vc">
+  <div class="pair">
+    <button data-uri="audio/volumeUp" aria-label="Volume mais">+</button>
+    <span>Volume</span>
+    <button data-uri="audio/volumeDown" aria-label="Volume menos">−</button>
+  </div>
+  <div class="pair">
+    <button data-uri="tv/channelUp" aria-label="Canal mais">+</button>
+    <span>Canal</span>
+    <button data-uri="tv/channelDown" aria-label="Canal menos">−</button>
+  </div>
+</div>
+
+<div class="dpad">
+  <button data-btn="MENU">Menu</button>
+  <button data-btn="UP" aria-label="Cima">▲</button>
+  <button data-btn="HOME">Início</button>
+  <button data-btn="LEFT" aria-label="Esquerda">◀</button>
+  <button class="ok" data-btn="ENTER">OK</button>
+  <button data-btn="RIGHT" aria-label="Direita">▶</button>
+  <button data-btn="BACK">Voltar</button>
+  <button data-btn="DOWN" aria-label="Baixo">▼</button>
+  <button data-btn="EXIT">Sair</button>
+</div>
+
+<div class="row c4 apps">
+  <button class="nl" data-app="netflix">Netflix</button>
+  <button class="yt" data-app="youtube.leanback.v4">YouTube</button>
+  <button class="pv" data-app="amazon">Prime</button>
+  <button class="hm" data-app="com.webos.app.home">Início</button>
+</div>
+
+<details>
+  <summary>Números e cores</summary>
+  <div class="row c3">
+    <button data-btn="1">1</button><button data-btn="2">2</button><button data-btn="3">3</button>
+    <button data-btn="4">4</button><button data-btn="5">5</button><button data-btn="6">6</button>
+    <button data-btn="7">7</button><button data-btn="8">8</button><button data-btn="9">9</button>
+    <span></span><button data-btn="0">0</button><span></span>
+  </div>
+  <div class="row c4">
+    <button data-btn="RED" style="background:#c93a3a">&nbsp;</button>
+    <button data-btn="GREEN" style="background:#3a9a55">&nbsp;</button>
+    <button data-btn="YELLOW" style="background:#c9a93a">&nbsp;</button>
+    <button data-btn="BLUE" style="background:#3a6ac9">&nbsp;</button>
+  </div>
+</details>
+
+<details>
+  <summary>Digitar texto na TV</summary>
+  <div class="line">
+    <input id="txt" placeholder="Digite aqui" aria-label="Texto">
+    <button id="enviarTxt">Texto</button>
+    <button id="enviarMsg">Aviso</button>
+  </div>
+  <small>"Texto" digita no campo aberto na TV (por exemplo, a busca). "Aviso" mostra uma mensagem na tela.</small>
+</details>
+
+<details>
+  <summary>Configurações</summary>
+  <small style="padding-bottom:4px">IP da TV (use só se ela não aparecer sozinha):</small>
+  <div class="line">
+    <input id="ip" inputmode="decimal" placeholder="192.168.0.7">
+    <button class="go" id="conectarIp">Conectar</button>
+  </div>
+  <small style="padding-bottom:4px">Endereço MAC da TV (para o botão Ligar):</small>
+  <div class="line">
+    <input id="mac" placeholder="C8:02:10:3B:00:E8">
+    <button id="salvarMac">Salvar</button>
+  </div>
+  <small>O botão Ligar só funciona se a TV aceitar ser ligada pelo Wi-Fi. Procure "Ligar pelo Wi-Fi" ou "Wake on LAN" nas configurações da TV (Geral).</small>
+  <button id="procurar" style="width:100%;margin-bottom:12px">Procurar TV de novo</button>
+</details>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const st = $("#status");
+  const DEFAULT_MAC = "C8:02:10:3B:00:E8";
+  const PERMS = ["LAUNCH","LAUNCH_WEBAPP","APP_TO_APP","CONTROL_AUDIO","CONTROL_POWER","CONTROL_INPUT_TV","CONTROL_INPUT_TEXT","CONTROL_INPUT_JOYSTICK","CONTROL_MOUSE_AND_KEYBOARD","READ_APP_STATUS","READ_CURRENT_CHANNEL","READ_INSTALLED_APPS","READ_INPUT_DEVICE_LIST","READ_RUNNING_APPS","WRITE_NOTIFICATION_TOAST"];
+
+  let ip = "", seguro = true, abriu = false, conectado = false;
+  let tAbrir = null, tResp = null, mudo = false, n = 0, pend = {}, achadas = 0;
+
+  const store = {
+    get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+    set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+  };
+  const nativo = (typeof Android !== "undefined") ? Android : null;
+  function say(t, cls){ st.textContent = t; st.className = cls || ""; }
+
+  $("#ip").value = store.get("lg_ip") || "";
+  $("#mac").value = store.get("lg_mac") || DEFAULT_MAC;
+
+  /* ---------- conexão ---------- */
+  function conectar(novoIp){
+    ip = novoIp.trim();
+    if(!ip){ say("Digite o IP da TV", "err"); return; }
+    store.set("lg_ip", ip);
+    $("#ip").value = ip;
+    $("#pinbox").style.display = "none";
+    tentar(true);
+  }
+
+  function tentar(tentaSeguro){
+    seguro = tentaSeguro; abriu = false; conectado = false;
+    say("Conectando a " + ip + " (porta " + (seguro ? "3001" : "3000") + ")…");
+    nativo.connect(ip, seguro);
+    clearTimeout(tAbrir);
+    tAbrir = setTimeout(() => { if(!abriu) falhou(); }, 5000);
+  }
+
+  function falhou(){
+    clearTimeout(tAbrir);
+    if(seguro){ nativo.closeWs(); tentar(false); return; }
+    nativo.closeWs();
+    say("Não consegui falar com a TV. Veja se ela está ligada e no mesmo Wi-Fi.", "err");
+  }
+
+  function enviarRegistro(){
+    const key = store.get("lg_key_" + ip);
+    const payload = {forcePairing:false, pairingType:"PIN", manifest:{manifestVersion:1, permissions:PERMS}};
+    if(key) payload["client-key"] = key;
+    nativo.send(JSON.stringify({type:"register", id:"register_0", payload}));
+    if(!key) say("Olhe a TV: vai aparecer um código");
+    clearTimeout(tResp);
+    tResp = setTimeout(() => { if(!conectado) say("A TV não respondeu. Olhe a tela dela.", "err"); }, 8000);
+  }
+
+  function req(uri, payload, cb){
+    if(!conectado){ say("Conecte à TV primeiro", "err"); return; }
+    const id = "r" + (++n);
+    if(cb) pend[id] = cb;
+    nativo.send(JSON.stringify({type:"request", id, uri:"ssap://" + uri, payload: payload || {}}));
+  }
+
+  function abrirPonteiro(){
+    req("com.webos.service.networkinput/getPointerInputSocket", {}, p => {
+      if(p && p.socketPath) nativo.openPointer(p.socketPath);
+    });
+  }
+
+  function botao(nome){
+    if(!conectado){ say("Conecte à TV primeiro", "err"); return; }
+    if(!nativo.sendPointer("type:button\nname:" + nome + "\n\n")){
+      abrirPonteiro();
+      say("Reconectando os botões… tente de novo", "err");
+    }
+  }
+
+  /* ---------- eventos vindos do app ---------- */
+  window.nativeEvent = function(tipo, dado){
+    if(tipo === "open"){
+      abriu = true; clearTimeout(tAbrir);
+      enviarRegistro();
+    } else if(tipo === "message"){
+      let m; try{ m = JSON.parse(dado) }catch(e){ return; }
+      if(m.type === "response" && m.id === "register_0" && m.payload && m.payload.pairingType === "PIN"){
+        clearTimeout(tResp);
+        say("Digite abaixo o código que apareceu na TV");
+        $("#pinbox").style.display = "flex";
+        $("#pin").focus();
+      } else if(m.type === "registered"){
+        clearTimeout(tResp);
+        conectado = true;
+        $("#pinbox").style.display = "none";
+        if(m.payload && m.payload["client-key"]) store.set("lg_key_" + ip, m.payload["client-key"]);
+        say("Conectado à TV (" + ip + ")", "on");
+        abrirPonteiro();
+      } else if(m.id && pend[m.id]){
+        const f = pend[m.id]; delete pend[m.id]; f(m.payload);
+      } else if(m.type === "error"){
+        say("Erro da TV: " + (m.error || "desconhecido"), "err");
+      }
+    } else if(tipo === "close"){
+      if(!abriu){ falhou(); }
+      else { conectado = false; say("Conexão encerrada. Toque na TV para conectar de novo.", "err"); }
+    } else if(tipo === "ptrclose"){
+      /* o ponteiro é reaberto quando necessário */
+    } else if(tipo === "found"){
+      achadas++;
+      const b = document.createElement("button");
+      b.textContent = "TV LG  •  " + dado;
+      b.onclick = () => conectar(dado);
+      $("#tvs").appendChild(b);
+      if(!conectado && achadas === 1 && !store.get("lg_ip")) conectar(dado);
+    } else if(tipo === "discoverEnd"){
+      if(achadas === 0 && !conectado && !ip) say("Nenhuma TV encontrada. Abra Configurações abaixo e digite o IP.", "err");
+    } else if(tipo === "wol"){
+      say(dado === "ok" ? "Sinal enviado. A TV pode levar uns segundos para ligar." : "Endereço MAC inválido. Confira em Configurações.", dado === "ok" ? "on" : "err");
+    }
+  };
+
+  function procurar(){
+    achadas = 0;
+    $("#tvs").innerHTML = "";
+    if(!conectado && !ip) say("Procurando a TV…");
+    nativo.discover();
+  }
+
+  /* ---------- botões ---------- */
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if(!b || !nativo) return;
+    if(b.dataset.uri){ req(b.dataset.uri); }
+    else if(b.id === "mute"){ mudo = !mudo; req("audio/setMute", {mute:mudo}); }
+    else if(b.dataset.btn){ botao(b.dataset.btn); }
+    else if(b.dataset.app){ req("system.launcher/launch", {id:b.dataset.app}); }
+  });
+
+  $("#pinOk").onclick = () => {
+    const pin = $("#pin").value.trim();
+    if(pin) nativo.send(JSON.stringify({type:"request", id:"pin_0", uri:"ssap://pairing/setPin", payload:{pin}}));
+  };
+  $("#conectarIp").onclick = () => conectar($("#ip").value);
+  $("#procurar").onclick = procurar;
+  $("#ligar").onclick = () => {
+    const mac = $("#mac").value.trim();
+    store.set("lg_mac", mac);
+    say("Enviando sinal para ligar a TV…");
+    nativo.wol(mac, ip || $("#ip").value.trim());
+  };
+  $("#salvarMac").onclick = () => { store.set("lg_mac", $("#mac").value.trim()); say("MAC salvo", "on"); };
+  $("#enviarTxt").onclick = () => { const t = $("#txt").value; if(t) req("com.webos.service.ime/insertText", {text:t, replace:0}); };
+  $("#enviarMsg").onclick = () => { const t = $("#txt").value; if(t) req("system.notifications/createToast", {message:t}); };
+
+  /* ---------- início ---------- */
+  if(!nativo){
+    say("Abra este controle pelo app instalado no celular.", "err");
+  } else {
+    const salvo = store.get("lg_ip");
+    if(salvo) conectar(salvo);
+    procurar();
+  }
+})();
+</script>
+</body>
+</html>
