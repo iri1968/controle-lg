@@ -62,11 +62,15 @@ details{margin-top:12px;background:var(--panel);border-radius:14px;padding:4px 1
 summary{padding:12px 0;cursor:pointer;color:var(--mut)}
 small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
 
-#painel{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:flex-end;justify-content:center;z-index:10}
-#painel .sheet{width:100%;max-width:460px;background:var(--panel);border-radius:22px 22px 0 0;padding:16px 14px 24px;max-height:90vh;overflow:auto}
+#painel,#mousePanel{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:flex-end;justify-content:center;z-index:10}
+#painel .sheet,#mousePanel .sheet{width:100%;max-width:460px;background:var(--panel);border-radius:22px 22px 0 0;padding:16px 14px 24px;max-height:90vh;overflow:auto}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
 #entradas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
 .tit{color:var(--mut);font-size:14px;margin:4px 0 8px}
+.pad-wrap{display:flex;gap:10px;margin-bottom:12px}
+#pad{flex:1;height:250px;border-radius:18px;background:#0e1013;border:1px solid #343840;display:flex;align-items:center;justify-content:center;color:#4a515c;touch-action:none;user-select:none;text-align:center;padding:10px}
+#scrollbar{width:56px;height:250px;border-radius:18px;background:#15171b;border:1px solid #343840;display:flex;align-items:center;justify-content:center;color:#6c7480;font-size:22px;touch-action:none;user-select:none}
+#mousePanel .line button{flex:1}
 </style>
 </head>
 <body>
@@ -97,6 +101,7 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
 
   <div class="duo">
     <button class="rb" data-app="com.webos.app.livetv" aria-label="TV ao vivo">TV</button>
+    <button class="rb" id="mouse" aria-label="Mouse">🖱</button>
     <button class="rb" id="kbd" aria-label="Digitar texto">⌨</button>
   </div>
 
@@ -177,6 +182,24 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
     <p class="tit" id="titEnt">Entradas da TV (HDMI, etc.)</p>
     <div id="entradas"></div>
     <button id="fechar" style="width:100%">Fechar</button>
+  </div>
+</div>
+
+<div id="mousePanel">
+  <div class="sheet">
+    <p class="tit">Mouse da TV: arraste para mover e toque para clicar. A faixa da direita rola a tela.</p>
+    <div class="pad-wrap">
+      <div id="pad">toque e arraste aqui</div>
+      <div id="scrollbar">⇕</div>
+    </div>
+    <div class="line">
+      <button data-btn="BACK">Voltar</button>
+      <button class="go" id="clique">Clique</button>
+      <button data-btn="HOME">Início</button>
+    </div>
+    <p class="tit">Velocidade do mouse</p>
+    <input type="range" id="vel" min="1" max="5" step="0.5" value="2.5" style="width:100%;margin-bottom:14px">
+    <button id="fecharMouse" style="width:100%">Fechar</button>
   </div>
 </div>
 
@@ -345,6 +368,8 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
     if(!b || !nativo) return;
     if(b.id === "pwr"){ energia(); }
     else if(b.id === "mute"){ mudo = !mudo; req("audio/setMute", {mute:mudo}); }
+    else if(b.id === "mouse"){ if(!conectado){ say("Conecte à TV primeiro", "err"); } else { $("#mousePanel").style.display = "flex"; } }
+    else if(b.id === "clique"){ ptrSend("type:click\n\n"); }
     else if(b.id === "num"){ abrirPainel(false); }
     else if(b.id === "fire"){ req("tv/switchInput", {inputId: store.get("lg_fire") || "HDMI_3"}); }
     else if(b.id === "pc"){ req("tv/switchInput", {inputId: store.get("lg_pc") || "HDMI_1"}); }
@@ -366,6 +391,56 @@ small{color:var(--mut);line-height:1.5;display:block;padding-bottom:12px}
   $("#salvarMac").onclick = () => { store.set("lg_mac", $("#mac").value.trim()); say("MAC salvo", "on"); };
   $("#enviarTxt").onclick = () => { const t = $("#txt").value; if(t) req("com.webos.service.ime/insertText", {text:t, replace:0}); };
   $("#enviarMsg").onclick = () => { const t = $("#txt").value; if(t) req("system.notifications/createToast", {message:t}); };
+
+  /* ---------- mouse (touchpad) ---------- */
+  let vel = parseFloat(store.get("lg_vel") || "2.5");
+  if(!(vel >= 1 && vel <= 5)) vel = 2.5;
+  $("#vel").value = vel;
+  $("#vel").oninput = e => { vel = parseFloat(e.target.value); store.set("lg_vel", String(vel)); };
+  $("#fecharMouse").onclick = () => { $("#mousePanel").style.display = "none"; };
+
+  function ptrSend(txt){
+    if(!conectado){ say("Conecte à TV primeiro", "err"); return false; }
+    if(!nativo.sendPointer(txt)){ abrirPonteiro(); return false; }
+    return true;
+  }
+
+  (function(){
+    const pad = $("#pad");
+    let x0 = 0, y0 = 0, t0 = 0, moveu = 0, ax = 0, ay = 0, last = 0;
+    pad.addEventListener("touchstart", e => {
+      const t = e.touches[0];
+      x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); moveu = 0; ax = 0; ay = 0;
+      e.preventDefault();
+    }, {passive:false});
+    pad.addEventListener("touchmove", e => {
+      const t = e.touches[0];
+      moveu += Math.abs(t.clientX - x0) + Math.abs(t.clientY - y0);
+      ax += (t.clientX - x0) * vel; ay += (t.clientY - y0) * vel;
+      x0 = t.clientX; y0 = t.clientY;
+      const agora = Date.now();
+      if(agora - last >= 25){
+        const ix = Math.round(ax), iy = Math.round(ay);
+        if(ix || iy) ptrSend("type:move\ndx:" + ix + "\ndy:" + iy + "\ndown:0\n\n");
+        ax = 0; ay = 0; last = agora;
+      }
+      e.preventDefault();
+    }, {passive:false});
+    pad.addEventListener("touchend", e => {
+      if(moveu < 10 && Date.now() - t0 < 300) ptrSend("type:click\n\n");
+      e.preventDefault();
+    }, {passive:false});
+
+    const sb = $("#scrollbar");
+    let sy = 0;
+    sb.addEventListener("touchstart", e => { sy = e.touches[0].clientY; e.preventDefault(); }, {passive:false});
+    sb.addEventListener("touchmove", e => {
+      const y = e.touches[0].clientY;
+      const d = Math.round((y - sy) * 0.8);
+      if(Math.abs(d) >= 3){ ptrSend("type:scroll\ndx:0\ndy:" + d + "\n\n"); sy = y; }
+      e.preventDefault();
+    }, {passive:false});
+  })();
 
   /* ---------- início ---------- */
   if(!nativo){
